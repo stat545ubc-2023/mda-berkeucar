@@ -169,6 +169,9 @@ Make sure that you're using dplyr and ggplot2 rather than base R for this task. 
 2.2 **(4 points)** For each of the 4 exercises that you complete, provide a *brief explanation* of why you chose that exercise in relation to your data (in other words, why does it make sense to do that?), and sufficient comments for a reader to understand your reasoning and code.
 
 <!-------------------------- Start your work below ---------------------------->
+## Introduction
+Steam is a platform that maintains and sells video games for computers. _steam\_games_ dataset contains a subset of games from Steam platform. It contains relevant information about each game such as its original or discounted price, name, url, reviews, etc. I will be analysing this dataset by my selection of questions from the 8 questions mentioned above. Furthermore, the data analysis is done by _ggplot2_ and _deplyr_ libraries. 
+
 1.  Plot the distribution of a numeric variable.
 
 > To invest in something, one first needs to do a market research and be informed about the general prices. Thus, it makes sense to see the general distribution of the original prices of the games in Steam and I will color the different types of products accordingly. I first tried to not scale the axes but since the count of some pricepoints and the price diversity are wide and do not produce a reasonable and understandable histogram, I wanted to condense them by using log10 scaling. However, some games are free which means their transformation would converge. To prevent the convergence of these data, I have added a small price (0.001) to their original price. I did not do anything abour 0 count for a price point since it should not be represented on the graph anyway. The warnings indicate 0 count bins which is fine and nothing concerning. I also tried to plot the density function, but it does not represents well, so I am keeping the histogram.
