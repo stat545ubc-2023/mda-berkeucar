@@ -464,7 +464,8 @@ sufficient comments for a reader to understand your reasoning and code.
 > a small price (0.001) to their original price. I did not do anything
 > abour 0 count for a price point since it should not be represented on
 > the graph anyway. The warnings indicate 0 count bins which is fine and
-> nothing concerning.
+> nothing concerning. I also tried to plot the density function, but it
+> does not represents well, so I am keeping the histogram.
 
 ``` r
 # since I will use log scale, I first add a small amount (0.001) to the every original_price value before using log function, just to prevent 0 values from converging
@@ -473,7 +474,7 @@ anti_converge_steam_games = steam_games %>% mutate(original_price = original_pri
 # Here, I also categorized the games due to their types (if the game is a bundle, app, sub, or NA) to see the difference between their price average as well compared to other types
 # I scale axes to make the graph more legible and interpretable since the price interval is too wide and app count dominates the type comparison as well.
 ggplot(anti_converge_steam_games, aes(original_price)) +
-  geom_histogram(aes(fill=types), bins=60)+ # I have used bins as 60, since it was the best option for the sake of reading and interpretation
+  geom_histogram( aes(fill=types), bins=60)+ # I have used bins as 60, since it was the best option for the sake of reading and interpretation
   scale_x_log10("Original Price (Scale: log10)") +
   scale_y_log10("Count (Scale: log10)") +
   ggtitle("Histogram for the count distribution of games on original price") 
@@ -574,7 +575,10 @@ ggplot(augmented_steam_games) +
 > a bit more conveniently and a histogram that shows the bin
 > distribution better. It seems like people tend to like cheaper games.
 > And people only voted apps as “very positive” according to the
-> boxplot.
+> boxplot. Again, I have scaled the y axis with log10 in order to see
+> the details better. The warnings are due to 0 counts which would not
+> be represented anyway. Density plot was not detailed enough again, so
+> I am keeping the histogram instead.
 
 ``` r
 # Here, I only filter in the one that contain "Very Positive" in their all_reviews field.
@@ -593,7 +597,7 @@ ggplot(very_positive_games) +
 ``` r
 # This is the histogram that shows the counts of original price points of the very positive games
 ggplot(very_positive_games) + 
-  geom_histogram(aes(original_price), color="purple", bins=50) +
+  geom_histogram(aes(original_price), color="purple", bins=40) +
   scale_y_log10("Count (Scale: log10)", labels = scales::number_format()) +
   xlab("Original Price") +
   scale_x_continuous(labels=scales::dollar_format())
@@ -601,7 +605,7 @@ ggplot(very_positive_games) +
 
     ## Warning: Transformation introduced infinite values in continuous y-axis
 
-    ## Warning: Removed 29 rows containing missing values (`geom_bar()`).
+    ## Warning: Removed 21 rows containing missing values (`geom_bar()`).
 
 ![](mini-project-1_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
 

@@ -171,7 +171,7 @@ Make sure that you're using dplyr and ggplot2 rather than base R for this task. 
 <!-------------------------- Start your work below ---------------------------->
 1.  Plot the distribution of a numeric variable.
 
-> To invest in something, one first needs to do a market research and be informed about the general prices. Thus, it makes sense to see the general distribution of the original prices of the games in Steam and I will color the different types of products accordingly. I first tried to not scale the axes but since the count of some pricepoints and the price diversity are wide and do not produce a reasonable and understandable histogram, I wanted to condense them by using log10 scaling. However, some games are free which means their transformation would converge. To prevent the convergence of these data, I have added a small price (0.001) to their original price. I did not do anything abour 0 count for a price point since it should not be represented on the graph anyway. The warnings indicate 0 count bins which is fine and nothing concerning.
+> To invest in something, one first needs to do a market research and be informed about the general prices. Thus, it makes sense to see the general distribution of the original prices of the games in Steam and I will color the different types of products accordingly. I first tried to not scale the axes but since the count of some pricepoints and the price diversity are wide and do not produce a reasonable and understandable histogram, I wanted to condense them by using log10 scaling. However, some games are free which means their transformation would converge. To prevent the convergence of these data, I have added a small price (0.001) to their original price. I did not do anything abour 0 count for a price point since it should not be represented on the graph anyway. The warnings indicate 0 count bins which is fine and nothing concerning. I also tried to plot the density function, but it does not represents well, so I am keeping the histogram.
 
 ```{r}
 # since I will use log scale, I first add a small amount (0.001) to the every original_price value before using log function, just to prevent 0 values from converging
@@ -180,7 +180,7 @@ anti_converge_steam_games = steam_games %>% mutate(original_price = original_pri
 # Here, I also categorized the games due to their types (if the game is a bundle, app, sub, or NA) to see the difference between their price average as well compared to other types
 # I scale axes to make the graph more legible and interpretable since the price interval is too wide and app count dominates the type comparison as well.
 ggplot(anti_converge_steam_games, aes(original_price)) +
-  geom_histogram(aes(fill=types), bins=60)+ # I have used bins as 60, since it was the best option for the sake of reading and interpretation
+  geom_histogram( aes(fill=types), bins=60)+ # I have used bins as 60, since it was the best option for the sake of reading and interpretation
   scale_x_log10("Original Price (Scale: log10)") +
   scale_y_log10("Count (Scale: log10)") +
   ggtitle("Histogram for the count distribution of games on original price") 
@@ -230,7 +230,7 @@ ggplot(augmented_steam_games) +
 
 5.  Filter observations in your data according to your own criteria. Think of what you'd like to explore - again, if this was the `titanic` dataset, I may want to narrow my search down to passengers born in a particular year...
 
-> I was curious about if the satisfaction of the customers are somewhat related to the price since people tend to expect less from low priced games. I will only check the prices of the "Very Positive" graded games (under all reviews column). So, one can notice if people say "it is a good game" only if that game is not expensive. I scaled y axis/count of the pricepoint since some counts dominated which made small counts invisible and I wanted to see the small counts in the graph as well in order to have a more comprehensive analysis. In order to prevent converging in 0 dollar games. So, I have used *anti_convergence_games* tibble that I have created in question 1 of this section. I provide a boxplot which shows the outlier and average a bit more conveniently and a histogram that shows the bin distribution better. It seems like people tend to like cheaper games. And people only voted apps as "very positive" according to the boxplot.
+> I was curious about if the satisfaction of the customers are somewhat related to the price since people tend to expect less from low priced games. I will only check the prices of the "Very Positive" graded games (under all reviews column). So, one can notice if people say "it is a good game" only if that game is not expensive. I scaled y axis/count of the pricepoint since some counts dominated which made small counts invisible and I wanted to see the small counts in the graph as well in order to have a more comprehensive analysis. In order to prevent converging in 0 dollar games. So, I have used *anti_convergence_games* tibble that I have created in question 1 of this section. I provide a boxplot which shows the outlier and average a bit more conveniently and a histogram that shows the bin distribution better. It seems like people tend to like cheaper games. And people only voted apps as "very positive" according to the boxplot. Again, I have scaled the y axis with log10 in order to see the details better. The warnings are due to 0 counts which would not be represented anyway. Density plot was not detailed enough again, so I am keeping the histogram instead.
 
 ```{r}
 # Here, I only filter in the one that contain "Very Positive" in their all_reviews field.
@@ -245,7 +245,7 @@ ggplot(very_positive_games) +
   
 # This is the histogram that shows the counts of original price points of the very positive games
 ggplot(very_positive_games) + 
-  geom_histogram(aes(original_price), color="purple", bins=50) +
+  geom_histogram(aes(original_price), color="purple", bins=40) +
   scale_y_log10("Count (Scale: log10)", labels = scales::number_format()) +
   xlab("Original Price") +
   scale_x_continuous(labels=scales::dollar_format())
