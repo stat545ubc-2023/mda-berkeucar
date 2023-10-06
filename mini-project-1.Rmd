@@ -170,7 +170,7 @@ Make sure that you're using dplyr and ggplot2 rather than base R for this task. 
 
 <!-------------------------- Start your work below ---------------------------->
 ## Introduction
-Steam is a platform that maintains and sells video games for computers. _steam\_games_ dataset contains a subset of games from Steam platform. It contains relevant information about each game such as its original or discounted price, name, url, reviews, etc. I will be analysing this dataset by my selection of questions from the 8 questions mentioned above. Furthermore, the data analysis is done by _ggplot2_ and _deplyr_ libraries. 
+[Steam](https://store.steampowered.com) is a platform that maintains and sells video games for computers. _steam\_games_ dataset contains a subset of games from Steam platform. It contains relevant information about each game such as its original or discounted price, name, url, reviews, etc. I will be analysing this dataset by my selection of questions from the 8 questions mentioned above. Furthermore, the data analysis is done by _ggplot2_ and _deplyr_ libraries. 
 
 1.  Plot the distribution of a numeric variable.
 

@@ -452,13 +452,13 @@ sufficient comments for a reader to understand your reasoning and code.
 
 ## Introduction
 
-Steam is a platform that maintains and sells video games for computers.
-*steam_games* dataset contains a subset of games from Steam platform. It
-contains relevant information about each game such as its original or
-discounted price, name, url, reviews, etc. I will be analysing this
-dataset by my selection of questions from the 8 questions mentioned
-above. Furthermore, the data analysis is done by *ggplot2* and *deplyr*
-libraries.
+[Steam](https://store.steampowered.com) is a platform that maintains and
+sells video games for computers. *steam_games* dataset contains a subset
+of games from Steam platform. It contains relevant information about
+each game such as its original or discounted price, name, url, reviews,
+etc. I will be analysing this dataset by my selection of questions from
+the 8 questions mentioned above. Furthermore, the data analysis is done
+by *ggplot2* and *deplyr* libraries.
 
 1.  Plot the distribution of a numeric variable.
 
