@@ -625,7 +625,9 @@ Write the 4 questions and any additional comments below.
     correlated with the price in a way?
 4.  What is the distribution of the languages of the games? Is the
     distribution correlated with the review score of that game in any
-    sense? <!----------------------------->
+    sense?
+
+<!----------------------------->
 
 # Overall reproducibility/Cleanliness/Coherence Checklist
 

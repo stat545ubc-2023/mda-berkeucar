@@ -262,6 +262,7 @@ ggplot(very_positive_games) +
 2. Is there a correlation between the game price and the overall review score of that game? If yes, how are they correlated?
 3. What is the distribution of genres of the games? Is the distribution correlated with the price in a way? 
 4. What is the distribution of the languages of the games? Is the distribution correlated with the review score of that game in any sense?
+
 <!----------------------------->
 
 # Overall reproducibility/Cleanliness/Coherence Checklist 
