@@ -401,28 +401,22 @@ head(selected_genres)
 ```
 
     ## [[1]]
-    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
-    ## [4] "Simulation"           
+    ## [1] "Action" "Casual" "Indie" 
     ## 
     ## [[2]]
-    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
-    ## [4] "Simulation"           
+    ## [1] "Action" "Casual" "Indie" 
     ## 
     ## [[3]]
-    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
-    ## [4] "Simulation"           
+    ## [1] "Action" "Casual" "Indie" 
     ## 
     ## [[4]]
-    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
-    ## [4] "Simulation"           
+    ## [1] "Action" "Casual" "Indie" 
     ## 
     ## [[5]]
-    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
-    ## [4] "Simulation"           
+    ## [1] "Action" "Casual" "Indie" 
     ## 
     ## [[6]]
-    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
-    ## [4] "Simulation"
+    ## [1] "Action" "Casual" "Indie"
 
 ``` r
 (histogram_data <- as.tibble(genre_filtered_steam_games %>% group_by(selected_genre, price_level) %>% summarise(n=n())))
