@@ -458,6 +458,7 @@ ggplot(second_games) +
   scale_x_continuous("Review Score") +
   ggtitle("Game Price vs Review Score")
 ```
+
 This shows even though we see the mean goes bigger in boxplot, it does not give a robust and sensitive information about the general distribution and correlation...
 
 <!----------------------------------------------------------------------------->

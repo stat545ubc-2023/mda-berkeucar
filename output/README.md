@@ -1,0 +1,1 @@
+This folder contains the output files of mini data analysis project milestone 2.
