@@ -401,22 +401,28 @@ head(selected_genres)
 ```
 
     ## [[1]]
-    ## [1] "Action"    "Adventure" "Casual"    "Indie"    
+    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
+    ## [4] "Simulation"           
     ## 
     ## [[2]]
-    ## [1] "Action"    "Adventure" "Casual"    "Indie"    
+    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
+    ## [4] "Simulation"           
     ## 
     ## [[3]]
-    ## [1] "Action"    "Adventure" "Casual"    "Indie"    
+    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
+    ## [4] "Simulation"           
     ## 
     ## [[4]]
-    ## [1] "Action"    "Adventure" "Casual"    "Indie"    
+    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
+    ## [4] "Simulation"           
     ## 
     ## [[5]]
-    ## [1] "Action"    "Adventure" "Casual"    "Indie"    
+    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
+    ## [4] "Simulation"           
     ## 
     ## [[6]]
-    ## [1] "Action"    "Adventure" "Casual"    "Indie"
+    ## [1] "Action"                "Free to Play"          "Massively Multiplayer"
+    ## [4] "Simulation"
 
 ``` r
 (histogram_data <- as.tibble(genre_filtered_steam_games %>% group_by(selected_genre, price_level) %>% summarise(n=n())))
@@ -595,16 +601,15 @@ graph is an answer to this question: 7. Make a graph where it makes
 sense to customize the alpha transparency.
 
 ``` r
-ggplot(selected_language_steam_games%>%mutate(score=score+0.1)) + # added 0.1 to avoid log10 divergence
+selected_language_set <- selected_language_steam_games %>% mutate(score=score+0.1) %>% filter(!is.na(score)) # added 0.1 to avoid log10 divergence and dropped the NA review scores
+ggplot(selected_language_set) + 
   geom_violin(aes(x=selected_language, y=score)) +
   geom_bar(aes(selected_language), alpha=0.2) + 
-  scale_y_log10("Review Scores and Count of Occurences (Scaled log10)") +
+  scale_y_log10("Review Scores and Count of Occurences (Scaled log10)", labels = scales::number_format()) +
   ggtitle("Review scores and count of occurrences for each language group ") +
   xlab("Language") +
   coord_flip()
 ```
-
-    ## Warning: Removed 18495 rows containing non-finite values (`stat_ydensity()`).
 
     ## Warning: Groups with fewer than two data points have been dropped.
     ## Groups with fewer than two data points have been dropped.
@@ -696,34 +701,52 @@ Considering the data columns that I have worked with this dataset is not
 tidy…
 
 ``` r
-is_tidy <- steam_games %>% select(genre, languages, all_reviews, recent_reviews, recommended_requirements, minimum_requirements, game_details, popular_tags) 
+is_tidy <- steam_games %>% select(id, url, types, name, achievements, original_price, genre, all_reviews) 
 glimpse(is_tidy)
 ```
 
     ## Rows: 40,833
     ## Columns: 8
-    ## $ genre                    <chr> "Action", "Action,Adventure,Massively Multipl…
-    ## $ languages                <chr> "English,French,Italian,German,Spanish - Spai…
-    ## $ all_reviews              <chr> "Very Positive,(42,550),- 92% of the 42,550 u…
-    ## $ recent_reviews           <chr> "Very Positive,(554),- 89% of the 554 user re…
-    ## $ recommended_requirements <chr> "Recommended:,OS:,Windows 7/8.1/10 (64-bit ve…
-    ## $ minimum_requirements     <chr> "Minimum:,OS:,Windows 7/8.1/10 (64-bit versio…
-    ## $ game_details             <chr> "Single-player,Multi-player,Co-op,Steam Achie…
-    ## $ popular_tags             <chr> "FPS,Gore,Action,Demons,Shooter,First-Person,…
+    ## $ id             <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, …
+    ## $ url            <chr> "https://store.steampowered.com/app/379720/DOOM/", "htt…
+    ## $ types          <chr> "app", "app", "app", "app", "app", "bundle", "app", "ap…
+    ## $ name           <chr> "DOOM", "PLAYERUNKNOWN'S BATTLEGROUNDS", "BATTLETECH", …
+    ## $ achievements   <dbl> 54, 37, 128, NA, NA, NA, 51, 55, 34, 43, 72, 41, NA, 50…
+    ## $ original_price <dbl> 19.99, 29.99, 39.99, 44.99, 0.00, NA, 59.99, 14.99, 29.…
+    ## $ genre          <chr> "Action", "Action,Adventure,Massively Multiplayer", "Ac…
+    ## $ all_reviews    <chr> "Very Positive,(42,550),- 92% of the 42,550 user review…
 
 The problem of this dataset is not that it contains column names that
 are normally variables but the cells contain lots of variables or
-variable types sometimes. For example **all_reviews** and
-**recent_reviews** columns. They contain review type, review count,
-review score in one cell and these values are not even in the same data
-storage type (dbl, int, string). **recommended_requirements** and
-**minimum_requirements** columns also contain multiple different
-variable types inside a single cell: OS, Processor, Memory, etc. Some
-other cells are a bit more naive and they only contain more than one
-instance of that column name. For example **languages** and **genre**
-columns can maintain more than one languages or genres time to time.
-These make this dataset UNTIDY. I am not even mentioning several NA
-values for different column values…
+variable types sometimes. For example **all_reviews** column. It
+contains review type, review count, review score in one cell and these
+values are not even in the same data storage type (dbl, int, string).
+Some people consider [NA values untidy as
+well](https://arimoroolayinka.medium.com/a-gentle-introduction-to-tidy-data-in-r-b6673b4d304c).
+I am not even mentioning several NA values for different column values…
+For my case, these NAs are explicit missing values. I do not think there
+is a way for me to tell there are implicit missing entries since there
+is no harmony or pattern for the games that show the second iteration of
+a game series is missing for example. I also cannot `complete()` them
+since the missing values have a good possibility that they would differ
+from the recent non NA value encountered on the dataset column. These
+make this dataset UNTIDY.
+
+Note: I am considering genres column as a single variable column and it
+contains a single value. Since one game can be categorized into
+different genres together and the combination creates a unique
+signature, the sequence of genres create a unique and a *single* value
+to my assumption. I feel like it would be more untidy if we were to have
+first_genre, second_genre, etc. since: 1. There is no precedance in
+genres, they are alphabetically sorted 2. No specific count of genres
+that can be written, so there would be lots and lots of NA values for
+rows that have only 1 or 2 genre for example. 3. first_genre,
+second_genre… columns would not have a distinction semantic wise. So
+these columns would actually refer to a single variable “genres” but
+with more columns that are not semantically different.
+
+Other columns are compatible with tidy data format, I believe
+(disregarding the small amount of NA values present).
 <!----------------------------------------------------------------------------->
 
 ### 2.2 (4 points)
@@ -738,6 +761,127 @@ Be sure to explain your reasoning for this task. Show us the “before”
 and “after”.
 
 <!--------------------------- Start your work below --------------------------->
+
+Now, I will just drop the NA valued rows for the sake of simplicity, but
+normally (like I do in the question 2.3) one should be careful for
+dropping rows, since they can contain NA values for non-intended column
+value but non-NA values for intended column values.
+
+``` r
+non_na_dataset <- is_tidy %>% filter(if_all(c(id, url, types, name, original_price, genre, all_reviews, achievements), ~ !is.na(.)))
+glimpse(non_na_dataset)
+```
+
+    ## Rows: 11,608
+    ## Columns: 8
+    ## $ id             <dbl> 1, 2, 3, 7, 8, 9, 10, 11, 12, 14, 17, 18, 20, 21, 22, 2…
+    ## $ url            <chr> "https://store.steampowered.com/app/379720/DOOM/", "htt…
+    ## $ types          <chr> "app", "app", "app", "app", "app", "app", "app", "app",…
+    ## $ name           <chr> "DOOM", "PLAYERUNKNOWN'S BATTLEGROUNDS", "BATTLETECH", …
+    ## $ achievements   <dbl> 54, 37, 128, 51, 55, 34, 43, 72, 41, 50, 12, 32, 75, 68…
+    ## $ original_price <dbl> 19.99, 29.99, 39.99, 59.99, 14.99, 29.99, 49.99, 19.99,…
+    ## $ genre          <chr> "Action", "Action,Adventure,Massively Multiplayer", "Ac…
+    ## $ all_reviews    <chr> "Very Positive,(42,550),- 92% of the 42,550 user review…
+
+My next step is to separate **all_reviews** column into 3 columns:
+review_cnt, review_score, review_type. I will do it by using
+`separate())`. I used different methods before doing this, but this way
+is the way if you want to use `tidyr`. This is important to tidy my data
+since this column contains multiple variables. Furthermore, it is easy
+to do it with `separate()` since only needed thing is the delimeters. It
+is possible since the format of the all_reviews column is really
+consistent. Since reviews that have count \<10 do not have score and
+classification, I am filtering out these rows.
+
+``` r
+wider_set <- non_na_dataset %>% filter(!grepl("Need more user reviews to generate a score", all_reviews) & !is.na(all_reviews)) %>% separate_wider_regex(all_reviews, c(review_type="[a-zA-z]* *[a-zA-z]*", review_cnt=",.*,-", review_score =".*%"), too_few="align_start")
+
+# the function did separate them but I still need to polish them since the separator letters are still in the cropped string (I do not know why it does not accept numerical chars but it does not !If it did there would no need for polishing)
+wider_set <- wider_set %>% mutate(review_score=gsub(" ", "", gsub("%", "", review_score)), review_cnt=gsub(",", "", gsub("-", "",  gsub("\\)","", gsub("\\(","",review_cnt)))))
+
+glimpse(wider_set)
+```
+
+    ## Rows: 8,870
+    ## Columns: 10
+    ## $ id             <dbl> 1, 2, 3, 7, 8, 9, 10, 11, 12, 14, 17, 18, 20, 21, 22, 2…
+    ## $ url            <chr> "https://store.steampowered.com/app/379720/DOOM/", "htt…
+    ## $ types          <chr> "app", "app", "app", "app", "app", "app", "app", "app",…
+    ## $ name           <chr> "DOOM", "PLAYERUNKNOWN'S BATTLEGROUNDS", "BATTLETECH", …
+    ## $ achievements   <dbl> 54, 37, 128, 51, 55, 34, 43, 72, 41, 50, 12, 32, 75, 68…
+    ## $ original_price <dbl> 19.99, 29.99, 39.99, 59.99, 14.99, 29.99, 49.99, 19.99,…
+    ## $ genre          <chr> "Action", "Action,Adventure,Massively Multiplayer", "Ac…
+    ## $ review_type    <chr> "Very Positive", "Mixed", "Mostly Positive", "Very Posi…
+    ## $ review_cnt     <chr> "42550", "836608", "7030", "9645", "23763", "12127", "9…
+    ## $ review_score   <chr> "92", "49", "71", "92", "91", "85", "44", "83", "84", "…
+
+Now, my data is tidy. In order to make it untidy again, I need to merge
+these three new columns. I will do it by `unite()`. It makes sense to
+use this one since the original untidy data was condensed in
+**all_reviews** column. Re-merging these columns would yield an untidy
+data, that contains 3 variables in one column… I will use successive
+calls to `unite()` to successfully use the syntax used in initial
+**all_reviews** column. I will not remote the merged columns since I
+need review type for the last part of the message just before ” user
+reviews for this game are positive.”. At the end, I will drop
+non-original columns all together.
+
+``` r
+untidy_set <- wider_set %>% unite(col="all_reviews_1", sep=",(", review_type, review_cnt , remove=FALSE)
+glimpse(untidy_set)
+```
+
+    ## Rows: 8,870
+    ## Columns: 11
+    ## $ id             <dbl> 1, 2, 3, 7, 8, 9, 10, 11, 12, 14, 17, 18, 20, 21, 22, 2…
+    ## $ url            <chr> "https://store.steampowered.com/app/379720/DOOM/", "htt…
+    ## $ types          <chr> "app", "app", "app", "app", "app", "app", "app", "app",…
+    ## $ name           <chr> "DOOM", "PLAYERUNKNOWN'S BATTLEGROUNDS", "BATTLETECH", …
+    ## $ achievements   <dbl> 54, 37, 128, 51, 55, 34, 43, 72, 41, 50, 12, 32, 75, 68…
+    ## $ original_price <dbl> 19.99, 29.99, 39.99, 59.99, 14.99, 29.99, 49.99, 19.99,…
+    ## $ genre          <chr> "Action", "Action,Adventure,Massively Multiplayer", "Ac…
+    ## $ all_reviews_1  <chr> "Very Positive,(42550", "Mixed,(836608", "Mostly Positi…
+    ## $ review_type    <chr> "Very Positive", "Mixed", "Mostly Positive", "Very Posi…
+    ## $ review_cnt     <chr> "42550", "836608", "7030", "9645", "23763", "12127", "9…
+    ## $ review_score   <chr> "92", "49", "71", "92", "91", "85", "44", "83", "84", "…
+
+``` r
+untidy_set <- untidy_set %>% unite(col="all_reviews_2", sep="),- ", all_reviews_1, review_score , remove=FALSE)
+glimpse(untidy_set)
+```
+
+    ## Rows: 8,870
+    ## Columns: 12
+    ## $ id             <dbl> 1, 2, 3, 7, 8, 9, 10, 11, 12, 14, 17, 18, 20, 21, 22, 2…
+    ## $ url            <chr> "https://store.steampowered.com/app/379720/DOOM/", "htt…
+    ## $ types          <chr> "app", "app", "app", "app", "app", "app", "app", "app",…
+    ## $ name           <chr> "DOOM", "PLAYERUNKNOWN'S BATTLEGROUNDS", "BATTLETECH", …
+    ## $ achievements   <dbl> 54, 37, 128, 51, 55, 34, 43, 72, 41, 50, 12, 32, 75, 68…
+    ## $ original_price <dbl> 19.99, 29.99, 39.99, 59.99, 14.99, 29.99, 49.99, 19.99,…
+    ## $ genre          <chr> "Action", "Action,Adventure,Massively Multiplayer", "Ac…
+    ## $ all_reviews_2  <chr> "Very Positive,(42550),- 92", "Mixed,(836608),- 49", "M…
+    ## $ all_reviews_1  <chr> "Very Positive,(42550", "Mixed,(836608", "Mostly Positi…
+    ## $ review_type    <chr> "Very Positive", "Mixed", "Mostly Positive", "Very Posi…
+    ## $ review_cnt     <chr> "42550", "836608", "7030", "9645", "23763", "12127", "9…
+    ## $ review_score   <chr> "92", "49", "71", "92", "91", "85", "44", "83", "84", "…
+
+``` r
+# polishing with respect to the initial style of the column, furthermore I drop the intermediate columns created by above 2 steps and the columns created while tidying the data as well
+untidy_set <- untidy_set %>% mutate(all_reviews= paste(all_reviews_2, "% of the ", review_cnt, " user reviews for this game are positive.")) %>% select(-all_reviews_1, -all_reviews_2, -review_type, -review_cnt, -review_score)
+glimpse(untidy_set)
+```
+
+    ## Rows: 8,870
+    ## Columns: 8
+    ## $ id             <dbl> 1, 2, 3, 7, 8, 9, 10, 11, 12, 14, 17, 18, 20, 21, 22, 2…
+    ## $ url            <chr> "https://store.steampowered.com/app/379720/DOOM/", "htt…
+    ## $ types          <chr> "app", "app", "app", "app", "app", "app", "app", "app",…
+    ## $ name           <chr> "DOOM", "PLAYERUNKNOWN'S BATTLEGROUNDS", "BATTLETECH", …
+    ## $ achievements   <dbl> 54, 37, 128, 51, 55, 34, 43, 72, 41, 50, 12, 32, 75, 68…
+    ## $ original_price <dbl> 19.99, 29.99, 39.99, 59.99, 14.99, 29.99, 49.99, 19.99,…
+    ## $ genre          <chr> "Action", "Action,Adventure,Massively Multiplayer", "Ac…
+    ## $ all_reviews    <chr> "Very Positive,(42550),- 92 % of the  42550  user revie…
+
 <!----------------------------------------------------------------------------->
 
 ### 2.3 (4 points)
@@ -790,7 +934,7 @@ review_cnt_steam_games <- steam_games %>% mutate(review_cnt=as.integer(gsub(",",
 review_cnt_score <- review_cnt_steam_games %>% mutate(review_score=as.integer(gsub("%", "", str_extract(pattern="\\d+%", string=all_reviews)))) # extract the score information from the all_reviews column
 ```
 
-Now, as far as tidy’ness concern, every table you normally work on or
+Now, as far as clearness concern, every table you normally work on or
 create for a purpose should only contains the relevant information.
 Then, you can assemble these datasets with joins according to your
 favor. Here, I first identify the required variables for these questions
@@ -1025,10 +1169,11 @@ ggplot(second_games) +
 
     ## `geom_smooth()` using formula = 'y ~ x'
 
-![](mini-project-2_files/figure-gfm/unnamed-chunk-27-1.png)<!-- --> This
-shows even though we see the mean goes bigger in boxplot, it does not
-give a robust and sensitive information about the general distribution
-and correlation…
+![](mini-project-2_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+
+This shows even though we see the mean goes bigger in boxplot, it does
+not give a robust and sensitive information about the general
+distribution and correlation…
 
 <!----------------------------------------------------------------------------->
 
